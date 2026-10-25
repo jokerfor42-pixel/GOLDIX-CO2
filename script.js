@@ -233,3 +233,7 @@ window.onload = function() {
     ];
     renderOrders();
 };
+const supabaseClient = window.supabase.createClient(
+  'https://xhjihclaipdlzvmqerph.supabase.co',
+  'sb_publishable_LpzrM8RpgFBQJt3EpSk3LQ_kylvoypV'
+);
