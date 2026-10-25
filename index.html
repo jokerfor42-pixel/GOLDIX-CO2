@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLDIX SO2 — Магазин Голды Standoff 2</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Навигация -->
+    <header class="navbar">
+        <div class="logo" onclick="showSection('shop')" style="cursor: pointer;">GOLDIX <span>SO2</span></div>
+        <div class="nav-right">
+            <button class="admin-badge-btn" id="admin-nav-btn" onclick="showSection('admin')" style="display: none;">⚙️ Админка</button>
+            <button class="nav-link" id="nav-auth-btn" onclick="handleUserClick()">Вход / Регистрация</button>
+            <button class="menu-btn" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Меню">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Выпадающее мобильное меню -->
+    <div id="mobile-dropdown" class="mobile-dropdown">
+        <button onclick="showSection('shop'); toggleMobileMenu();">🛒 Каталог</button>
+        <button id="mobile-admin-btn" onclick="showSection('admin'); toggleMobileMenu();" style="display: none; color: var(--gold);">⚙️ Админ-панель</button>
+        <button id="mobile-logout-btn" onclick="logout(); toggleMobileMenu();" style="display: none; color: #ff4d4d;">🚪 Выйти из аккаунта</button>
+    </div>
+
+    <main class="container">
+        <!-- Секция магазина -->
+        <section id="shop-section" class="page-section">
+            <div class="hero">
+                <div class="hero-sub">STANDOFF 2 • GOLD STORE</div>
+                <h1 class="hero-title">Твоя голда.<br><span class="highlight">Твои правила.</span></h1>
+                <p class="hero-desc">Магазин игрового золота с удобным выбором пакетов.</p>
+                <a href="#catalog" class="btn btn-primary btn-hero">
+                    Выбрать голду
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                </a>
+            </div>
+
+            <div id="catalog" class="catalog-header">
+                <span class="cat-num">01 / КАТАЛОГ</span>
+                <h2>Выбери пакет</h2>
+            </div>
+
+            <div class="packages-grid">
+                <div class="card">
+                    <div class="gold-icon">G</div>
+                    <div class="gold-amount">500 GOLD</div>
+                    <div class="price">200 ₽ <span class="rate">/ 100 ₴</span></div>
+                    <button class="btn btn-primary" onclick="openPaymentModal('500 GOLD', '200 ₽')">Купить</button>
+                </div>
+
+                <div class="card popular">
+                    <div class="badge">ПОПУЛЯРНЫЙ</div>
+                    <div class="gold-icon">G</div>
+                    <div class="gold-amount">1000 GOLD</div>
+                    <div class="price">250 ₽ <span class="rate">/ 125 ₴</span></div>
+                    <button class="btn btn-primary" onclick="openPaymentModal('1000 GOLD', '250 ₽')">Купить</button>
+                </div>
+
+                <div class="card">
+                    <div class="gold-icon">G</div>
+                    <div class="gold-amount">3000 GOLD</div>
+                    <div class="price">700 ₽ <span class="rate">/ 350 ₴</span></div>
+                    <button class="btn btn-primary" onclick="openPaymentModal('3000 GOLD', '700 ₽')">Купить</button>
+                </div>
+
+                <div class="card">
+                    <div class="gold-icon">G</div>
+                    <div class="gold-amount">5000 GOLD</div>
+                    <div class="price">1100 ₽ <span class="rate">/ 550 ₴</span></div>
+                    <button class="btn btn-primary" onclick="openPaymentModal('5000 GOLD', '1100 ₽')">Купить</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция Админ-панели -->
+        <section id="admin-section" class="page-section" style="display: none;">
+            <div class="admin-header">
+                <h2>Панель администратора</h2>
+                <div id="admin-info-text" style="color: var(--gold); font-weight: 600; margin-top: 5px;">Вы вошли как: samp111517@gnail.com</div>
+            </div>
+
+            <div class="orders-title" style="margin-top: 20px;">Список поступивших заказов:</div>
+            <div id="orders-list"></div>
+        </section>
+    </main>
+
+    <!-- Модальное окно Входа/Регистрации -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal('auth-modal')">&times;</button>
+            <div class="auth-header">
+                <div class="auth-icon">🎮</div>
+                <div class="modal-logo">GOLDIX <span>SO2</span></div>
+                <p class="modal-sub" id="auth-subtitle">Войдите в свой аккаунт</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login-btn" onclick="switchAuthMode('login')">Вход</button>
+                <button class="auth-tab" id="tab-register-btn" onclick="switchAuthMode('register')">Регистрация</button>
+            </div>
+
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div id="register-fields" style="display: none;">
+                    <div class="form-group">
+                        <label>ID АККАУНТА STANDOFF 2</label>
+                        <input type="text" id="auth-id" placeholder="Например: 12345678">
+                    </div>
+                    <div class="form-group">
+                        <label>ИГРОВОЙ НИКНЕЙМ</label>
+                        <input type="text" id="auth-nickname" placeholder="Введи свой никнейм">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>ЭЛЕКТРОННАЯ ПОЧТА</label>
+                    <input type="email" id="auth-email" placeholder="Электронная почта" required>
+                </div>
+                <div class="form-group">
+                    <label>ПАРОЛЬ</label>
+                    <input type="password" id="auth-password" placeholder="Введите пароль" required>
+                </div>
+
+                <div id="checkbox-container" class="checkbox-group" style="display: none;">
+                    <input type="checkbox" id="auth-agree">
+                    <label for="auth-agree">Я согласен с условиями использования сайта</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="auth-submit-btn">ВОЙТИ &rarr;</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно Оплаты -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal('payment-modal')">&times;</button>
+            <div class="modal-logo">GOLDIX <span>SO2</span></div>
+            <p class="modal-sub">Оплата заказа</p>
+            <form id="payment-form" onsubmit="processPayment(event)">
+                <div class="form-group">
+                    <label>Номер карты</label>
+                    <input type="text" id="card-number" placeholder="xxxx xxxx xxxx xxxx" required maxlength="19">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Срок действия</label>
+                        <input type="text" id="card-expiry" placeholder="xx/xx" required maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="password" id="card-cvv" placeholder="xxx" required maxlength="4">
+                    </div>
+                </div>
+                <p class="form-note">Макет платёжного окна.</p>
+                <button type="submit" class="btn btn-primary btn-full">Продолжить</button>
+                <p class="form-warning">Макет готов. Настоящая оплата пока не подключена.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно Таймера -->
+    <div id="timer-modal" class="modal-overlay">
+        <div class="modal-card timer-card">
+            <button class="close-btn" onclick="closeModal('timer-modal')">&times;</button>
+            <div class="modal-logo">GOLDIX <span>SO2</span></div>
+            <div class="spinner-container">
+                <div class="spinner"></div>
+            </div>
+            <h3>Ожидание выполнения заказа</h3>
+            <p class="timer-sub">Пожалуйста, не закрывайте страницу</p>
+            <div id="timer-display" class="timer-number">03:00</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
