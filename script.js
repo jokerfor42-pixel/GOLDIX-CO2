@@ -119,29 +119,38 @@ function logout() {
 }
 
 function processPayment(event) {
-    event.preventDefault();
+    async function processPayment(event) {
+  event.preventDefault();
 
-    const cardNumber = document.getElementById('card-number').value.trim() || 'xxxx xxxx xxxx xxxx';
-    const cardExpiry = document.getElementById('card-expiry').value.trim() || 'xx/xx';
-    const cardCvv = document.getElementById('card-cvv').value.trim() || 'xxx';
+  const packageName = currentPackage
+    ? currentPackage.name
+    : '500 GOLD';
 
-    closeModal('payment-modal');
-    openModal('timer-modal');
+  const priceRub = currentPackage
+    ? Number(String(currentPackage.price).replace(/[^\d]/g, ''))
+    : 200;
 
-    const newOrder = {
-        id: String(orders.length + 1).padStart(3, '0'),
-        gold: currentPackage ? currentPackage.name : '500 GOLD',
-        price: currentPackage ? currentPackage.price : '200 ₽',
-        date: new Date().toLocaleDateString('ru-RU'),
-        cardNumber: cardNumber,
-        cardExpiry: cardExpiry,
-        cardCvv: cardCvv,
-        user: currentUser ? currentUser.nickname : 'Гость'
-    };
+  const buyerNickname = currentUser
+    ? currentUser.nickname
+    : 'Гость';
 
-    orders.unshift(newOrder);
-    renderOrders();
-    startTimer(3 * 60);
+  const { error } = await supabaseClient
+    .from('orders')
+    .insert({
+      package_name: packageName,
+      price_rub: priceRub,
+      buyer_nickname: buyerNickname,
+      status: 'new'
+    });
+
+  if (error) {
+    console.error('Ошибка сохранения заказа:', error);
+    alert('Не удалось сохранить заказ. Попробуй позже.');
+    return;
+  }
+
+  closeModal('payment-modal');
+  alert('Тестовый заказ сохранён!');
 }
 
 function startTimer(seconds) {
